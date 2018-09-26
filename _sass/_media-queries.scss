@@ -1,6 +1,6 @@
 @media screen and (min-width: $viewport-small) {
   html {
-    font-size: 16px;
+    font-size: 14px;
   }
 
   h1,
@@ -17,11 +17,12 @@
   }
 
   .site-header a {
-    font-size: $h4;
+    // font-size: $h4;
   }
 
   .site-header .site-title {
-    font-size: $h3;
+    // font-size: $h2;
+    font-weight: 700;
     float: left;
   }
 
@@ -31,8 +32,9 @@
   }
 
   blockquote {
-    margin-left: $space-3;
-    padding: $space-3;
+    margin-left: -1rem;
+    // padding: $space-1;
+    padding-left: 0.75rem;
   }
 
   .social-icons-left {
@@ -46,13 +48,13 @@
 
 @media screen and (min-width: $viewport-medium) {
   html {
-    font-size: 18px;
+    font-size: 16px;
   }
 }
 
-@media screen and (min-width: $viewport-large) {
+@media screen and (min-width: $viewport-large){
   html {
-    font-size: 20px;
+    font-size: 18px;
   }
 }
 

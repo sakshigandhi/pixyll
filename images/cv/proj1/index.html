@@ -1,0 +1,275 @@
+<html>
+<head>
+<title>Computer Vision Project</title>
+<link href='http://fonts.googleapis.com/css?family=Nunito:300|Crimson+Text|Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" title="Default" href="styles/github.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>  
+
+<link rel="stylesheet" href="highlighting/styles/default.css">
+<script src="highlighting/highlight.pack.js"></script>
+
+<style type="text/css">
+body {
+	margin: 0px;
+	width: 100%;
+	font-family: 'Crimson Text', serif;
+	font-size: 20px;
+	background: #fcfcfc;
+}
+h1 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 28px;
+	margin: 25px 0px 0px 0px;
+	text-transform: lowercase;
+
+}
+
+h2 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 32px;
+	margin: 15px 0px 35px 0px;
+	color: #333;	
+	word-spacing: 3px;
+}
+
+h3 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 26px;
+	margin: 10px 0px 10px 0px;
+	color: #333;
+	word-spacing: 2px;
+}
+h4 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 22px;
+	margin: 10px 0px 10px 0px;
+	color: #333;
+	word-spacing: 2px;
+}
+
+h5 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 18px;
+	margin: 10px 0px 10px 0px;
+	color: #111;
+	word-spacing: 2px;
+}
+
+p, li {
+	color: #444;
+}
+
+a {
+	color: #DE3737;
+}
+
+.container {
+	margin: 0px auto 0px auto;
+	width: 960px;
+}
+
+#header {
+	background: #333;
+	width: 100%;
+}
+
+#headersub {
+	color: #ccc;
+	width: 960px;
+	margin: 0px auto 0px auto;
+	padding: 20px 0px 20px 0px;
+}
+
+.chart {
+	width: 480px;
+}
+.lol {
+	font-size: 16px;
+	color: #888;
+	font-style: italic;
+}
+.sep {
+	height: 1px;
+	width: 100%;
+	background: #999;
+	margin: 20px 0px 20px 0px;
+}
+.footer{
+	font-size: 16px;
+}
+.latex {
+	width: 100%;
+}
+
+.latex img {
+	display: block;
+	margin: 0px auto 0px auto;
+}
+
+pre {
+	font-family: 'Droid Sans Mono';
+	font-size: 14px;
+}
+
+td img {
+  vertical-align: middle;
+}
+
+#contents a {
+}
+</style>
+<script type="text/javascript">
+    hljs.initHighlightingOnLoad();
+</script>
+</head>
+<body>
+<div id="header" >
+<div id="headersub">
+<h1><span style="color: #DE3737">Sakshi Gandhi</span></h1>
+</div>
+</div>
+<div class="container">
+
+<h2>Project 1: Image Filtering and Hybrid Images</h2>
+
+<div style="float: left; padding: 20px">
+<img src="cat.bmp" />
+    <img src="dog.bmp" />
+    <img src="hybrid_image_scales_9.jpg" />
+<p style="font-size: 14px">Top: Original Images, a cat and a dog.</p>
+    <p style="font-size: 14px">Bottom: Hybrid Images, a cat at close and a dog at distance.</p>
+</div>
+
+<p>In this project, we aim to implement Image Filtering in Python, using Numpy, and further, use this Image Filtering to create Hybrid Images. </p>
+<h3>Image Filtering</h3>
+    <p>Image Filtering is a way of modifying images to make them look brigher, sharper, smoother, blurred, etc, by changing the pixels in some  manner. In computational terms, we apply a filter to an image by doing linear operations on each pixel using it's neighbouring pixels. There can be non-linear ways of doing image filtering, however, the scope of this project is to do linear filtering on 2D images.</p>
+    <p>
+        Linear Filters modify each pixel (x,y) by computing the sum of surrounding pixels weighted by the filter. The filter sizes are odd for this project to keep calculations limited to the center element. This <em>n &times m</em> filter window moves row-wise in the image and modifies each pixel. But what do we do about the pixels on edges?
+    </p>
+    <p>Padding is a technique used to add pixels to the original image so that the extra pixels can be used to cover the pixels at edges. While, there are various ways of padding the image, this project uses <strong>reflect</strong>, which adds a reflection of the edges as the extra pixels. </p>
+    <p>Therefore, the filtering algorithm of our function <code>my_imfilter(image, filter)</code> would do the following steps: </p>
+<ol>
+<li>Check if the filter dimensions are both odd, so 25 &times 1 or 5 &times 5 is okay, but 5 &times 4 would not be allowed.</li>
+<li>Let's say that the filter dimensions are n &times m. Therefore, to cover the (0,0) pixel in every layer, the image needs to be padded with (n-1)/2 and (m-1)/2 pixels on respective axes. <code>np.pad</code> is a function that does this quickly and allows for an argument for type of padding, <code>reflect</code> has been used for this project.  Note that we add n-1 and m-1 pixels so as the extra row and column is already present in the image and we are only surrounding it.</li>
+<li>After padding the image, the shape of the image is changed from (rows, columns, layers) to (rows + n - 1, columns + m - 1, layers). We want to modify only the internal (rows, columns, layers) pixels and therefore, we go row wise in each layer beginning from ((n-1)/2, (m-1)/2) pixel as it maps to (0,0) of the original image in each layer.  </li>
+    <li>Using <code>np.multiply</code>, element-wise multiplication of (n,m) subsection of image is done with the (n,m) shaped filter. Then, <code>np.sum</code> is used to sum the elements of resulting (n,m) matrix and the value is stored in a new image matrix, <code>filtered_image</code> initialised to the shape of original image</li>
+    <li>Row wise iterations of the padded image compute the weighted sum for every pixel and then the entire process is repeated for each layer. </li>
+    <li>Note that this algorithm works for all layers over 1 but if the number of layers is 1, we need to add a condition to avoid the third dimension in the entire filtering code.</li>
+</ol>
+
+<p>To verify this algorithm using visual inspection, the function is tested on a few filters with known effects.
+    <ol>
+    <li><h5>Identity Filter</h5>
+        <p>Identity Filter is a filter that doesn't modify the image at all. So mathematically, it is a matrix with all zeroes except one 1 at the center. Using this filter would mean multipying all surrounding pixels by 0 and only the center pixel by 1, leaving the sum to be same as the original value. Applying a 3 &times 3 identity filter to a sample motorcycle gives the following result:</p>
+            <img src="test_image.jpg" />
+            <img src="identity_image.jpg" />
+        <p>As expected, the images don't differ at all and the filter function works for this case.</p>
+    </li>
+    <li><h5>Small blur with a box filter</h5>
+        <p>To blur the image, we take a n &times n filter with value of each element as n<sup>-2</sup> so that the sum of all elements is 1. Applying this filter would mean averaging each pixels by surrounding pixels of size n &times n.</p>
+            <img src="test_image.jpg" />
+            <img src="blur_image.jpg" />
+        <p>As we have used 3 &times 3 sized filter, the blurring effect is very small.</p>
+    </li>
+    <li><h5>Large blur</h5>
+        <p>Using the same technique as small blur, we can increase the blurring by changing n to 21, causing a pixel to be an average of 441 pixels resulting in similar pixel values for a greater area. The effect is, however, very boxy:</p>
+            <img src="test_image.jpg" />
+            <img src="large_blur_image_box.jpg" />
+        <p>To make the blurring effect smooth, Gaussian filters can be used. As they are separable, sequential filtering can be done on each axis using 1-D filters. This gives a smoother blurring effect as the smoothening is exponentially adjusted instead of linearly.</p>
+            <img src="test_image.jpg" />
+            <img src="large_blur_image.jpg" />
+        <p>The <code>ksize</code> parameter of the Gaussian kernel defines the size of 1-D filters. <code>ksize</code> value was set to 25 to create the images above. At this value, we don't appreciate the advantage of separability as time taken to do filtering on each axis is more than them naive filtering using 25 &times 25 kernel. However, we can see that this becomes untrue when we increase the <code>ksize</code>. At a value of 75, the number of operations done naively overshoot separate ones, the time taken by separate 1-D filters is 3.14 seconds, while naive filter takes 3.43 seconds.
+        Therefore, separability is a useful mathematical tool for large blurring or for blurring of larger images.
+        </p>
+    </li>
+    <li>
+        <h5>Sobel Filter</h5>
+        <p>Sobel Filters are used to do edge detection. The first Sobel Filter removes horizontal gradients vertical edges of the image.</p>
+        <img src="test_image.jpg" />
+        <img src="sobel_image_horizontal.jpg" />
+        <p>Now, we remove vertical gradients to see horizontal edges of the image.</p>
+        <img src="test_image.jpg" />
+        <img src="sobel_image_vertical.jpg" />
+        <p>We can verify that the filter works as in the second image, the edge of the bike's top can be distinguished while in the first image, it's hardly visible.</p>
+    </li>
+    <li>
+        <h5>High pass filter (discrete Laplacian)</h5>
+        <p>High pass filter eliminates low frequencies in an image. It's done in two ways, first we use a Laplacian filter that mathematically scoops each pixel.</p>
+        <img src="test_image.jpg" />
+        <img src="laplacian_image.jpg" />
+        <p>The other way of creating a high pass filter effect is by subtracting an image's low pass filtered version from itself.</p>
+        <img src="test_image.jpg" />
+        <img src="high_pass_image.jpg" />
+    </li>
+</ol>
+</p>
+
+
+<div style="clear:both">
+<h3>Hybrid Images</h3>
+
+<p>Hybrid Image is an image that looks like one object at a close distance or large size but like a different object on moving far away or reducing the image size.
+    The interpretation of the image is a function of its viewing distance and exploits the multiscale perceptual mechanism of human vision.
+
+</p>
+    <p>Each image is a sum of various frequencies in a Fourier spectrum and we can use this principle to separate the high frequencies of one image and merge it with the low frequencies
+        of another image. In this project, hybrid images were created using a simplified version of the SIGGRAPH <a href="http://cvcl.mit.edu/publications/OlivaTorralb_Hybrid_Siggraph06.pdf" target="_blank">2006</a> paper by Oliva, Torralba, and Schyns.
+    </p>
+    <p>Image I1 and I2 are passed through a low pass filter G, LowI1 and LowI2. To convert Image I2 to a high-pass filtered verion, LowI2 can be subtracted from it resulting in HighI2. The assumption here is that an image is only made up of low frequencies and high frequencies, defined by a cut-off frequency.
+    Now, LowI1 and HighI2 can be summed element-wise to create a hybrid image.</p>
+
+    <p>Here, we can vary the cut-off frequency to see how well the images separate at a distance. With cut-off frequency 2, the standard deviation of the Gaussian filter becomes 2. The resulting size of the filter is 9 &times 9.</p>
+    <div style="float: left; padding: 20px; width:100%">
+        <img src="dog.bmp" width="24%"/>
+        <img src="cat.bmp" width="24%"/>
+
+        <p style="font-size: 14px">Original Images: a cat and a dog.</p>
+        <img src="low_frequencies_2.jpg" width="24%"/>
+        <img src="high_frequencies_2.jpg" width="24%"/>
+        <p style="font-size: 14px">Low pass filtered image of a dog and high pass filtered image of a cat</p>
+
+            <p style="font-size: 14px">Bottom: Hybrid Images, a cat at close and a dog at distance.</p>
+    </div>
+    <p>At a cut-off frequency this low, most of the details of the dogs face are preserved and the cat is hardly distinguishable. The blurring effect of the low pass filter is evidently very small.
+    Merging these two images will show the dog's face at a close distance as well because the definition of lower frequencies is badly set.</p>
+    <img src="hybrid_image_scales_2.jpg"/>
+
+    <p>By adjusting the cut-off frequency to 9, optimal features of both faces are preserved at filtering:</p>
+    <div style="float: left; padding: 20px; width:100%">
+        <img src="dog.bmp" width="24%"/>
+        <img src="cat.bmp" width="24%"/>
+
+        <p style="font-size: 14px">Original Images: a cat and a dog.</p>
+        <img src="low_frequencies_9.jpg" width="24%"/>
+        <img src="high_frequencies_9.jpg" width="24%"/>
+        <p style="font-size: 14px">Low pass filtered image of a dog and high pass filtered image of a cat</p>
+
+            <p style="font-size: 14px">Bottom: Hybrid Images, a cat at close and a dog at distance.</p>
+    </div>
+    <p>As expected, the dog's face is a lot more blurred and the cat's features are preserved as well. The detailing has increased on the cat's face and now merging the two
+    images gives a good hybrid image. At the 4th image, dog can be seen while at first two, cat is seen very clearly.</p>
+    <img src="hybrid_image_scales_9.jpg"/>
+
+    <p>The hybrid image may have values out side the [0,1] range and <code>np.clip</code> is used to clip those values to 0 or 1. This may happen
+    because of manipulation while merging the two images.</p>
+
+    <p>Cut-off frequncy will also need to be tuned based on the image being filtered for low-frequncies or high. If we reverse the order of images, run a low pass filter on cat's face and
+    high pass filter on dog's face, the results aren't as pleasing but they seem to be better at a cut-off frequency of 8 and not 9 because we need to preserve more of the cat's face.<p>
+     <img src="hybrid_image_scales.jpg"/>
+
+  <h3>Conclusion</h3>
+    <p>
+    The goal of this assignment was to understand 2-D linear filtering and use the concept to create a hybrid image that works because of separability of low frequencies and
+        high frequencies of image and the perception of human vision. The challenging part of the project was to correctly pick indices for element-wise multiplication. With trial and error, reflection
+        seemed to work as the best way of padding. I also learnt the advantage of separability and it's impact on run time. Finally, the cut-off frequency tuning
+        was very interesting to do.
+    </p>
+</div>
+</div>
+</body>
+</html>
